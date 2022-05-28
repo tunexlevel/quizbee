@@ -54,7 +54,7 @@ class QuizBee extends Component {
                             
                             <QuestionBox 
                                 question={question} 
-                                options={()=>[...incorrect_answers, correct_answer]}
+                                options={()=>[...incorrect_answers, correct_answer].sort(() => 0.5 - Math.random())}
                                 key={index}
                                 selected={answer=> this.computeAnswer(answer, correct_answer)}
                             />
