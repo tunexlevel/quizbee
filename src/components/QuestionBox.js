@@ -1,16 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Parser from 'html-react-parser';
+
 
 const QuestionBox = ({ question, options, selected }) => {
-    const [answers, setAnswer] = useState(options);
+    const [answers, setAnswers] = useState(options);
+
+    useEffect( ()=>{console.log(answers)}, [answers]);
+     
     return (
         <div className="questionBox">
-            <div className="question">{question}</div>
+            <div className="question">{Parser(question)}</div>
             {answers.map((text, index) => (
+                
                 <button
                     key={index}
                     className="answerBtn"
                     onClick={ ()=>{
-                        setAnswer([text]);
+                        setAnswers([text]);
                         selected(text);
                     }}>
                         {text}

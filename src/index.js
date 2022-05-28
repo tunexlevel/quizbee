@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import './assets/style.css';
 import ReactDOM from 'react-dom';
-import quizService from './quizService';
+import apiService from './quizService/api';
 import QuestionBox from './components/QuestionBox'; 
 import Result from './components/Result';
+import config from './quizService/config'
+
 
 class QuizBee extends Component {
     state = {
@@ -11,10 +13,10 @@ class QuizBee extends Component {
         score: 0,
         responses: 0,
     };
-    getQuestions = () => {
-        quizService().then(question => {
+    getQuestions = async () => {
+        apiService.getData().then(question => {
             this.setState({
-                questionBank: question
+                questionBank: question.data.results
             })
         });
     };
@@ -29,7 +31,7 @@ class QuizBee extends Component {
         }
 
         this.setState({
-            responses: this.state.responses < 5 ? this.state.responses + 1 : 5
+            responses: this.state.responses < 10 ? this.state.responses + 1 : 10
         })
 
     }
@@ -40,24 +42,26 @@ class QuizBee extends Component {
             responses: 0
         })
     }
+    
     render() {
         return (
             <div className="container">
                 <div className="title">QuizBee</div>
                 {   this.state.questionBank.length > 0 &&
-                    this.state.responses < 5 &&
-                    this.state.questionBank.map(({ question, answers, correct, questionId }) =>
+                    this.state.responses < config.TOTALQUESTIONS &&
+                    this.state.questionBank.map(({question, correct_answer,  incorrect_answers}, index) =>
                         (
+                            
                             <QuestionBox 
                                 question={question} 
-                                options={answers}
-                                key={questionId}
-                                selected={answer=> this.computeAnswer(answer, correct)}
+                                options={()=>[...incorrect_answers, correct_answer]}
+                                key={index}
+                                selected={answer=> this.computeAnswer(answer, correct_answer)}
                             />
                         )
                 )}
 
-                {this.state.responses === 5 ? <Result score={this.state.score} playAgain={this.playAgain} /> : null}
+                {this.state.responses === config.TOTALQUESTIONS ? <Result score={this.state.score} playAgain={this.playAgain} /> : null}
             </div>
         );
     }
